@@ -36,6 +36,26 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
     }
 
     [Fact]
+    public async Task Post_item_without_title_should_return_400_bad_request()
+    {
+        var request = new
+        {
+            title = "",
+            description = "Norge skrevet på ryggen",
+            category = "Clothing",
+            foundLocation = "Scene 2"
+        };
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/items",
+            request);
+
+        Assert.Equal(
+            HttpStatusCode.BadRequest,
+            response.StatusCode);
+    }
+
+    [Fact]
     public async Task Get_items_should_return_200_ok()
     {
         var response = await _client.GetAsync("/api/items");
@@ -161,8 +181,8 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
             response.StatusCode);
     }
 
-[Fact]
-public async Task Delete_claimed_item_should_return_409_conflict()
+    [Fact]
+    public async Task Delete_claimed_item_should_return_409_conflict()
     {
         var createRequest = new
         {
@@ -176,23 +196,23 @@ public async Task Delete_claimed_item_should_return_409_conflict()
             "/api/items",
             createRequest);
 
-            var location = createResponse.Headers.Location!.ToString();
+        var location = createResponse.Headers.Location!.ToString();
 
-            var id = location.Split('/').Last();
+        var id = location.Split('/').Last();
 
-            await _client.PostAsJsonAsync(
-                $"/api/items/{id}/claim",
-                new
-                {
-                    claimedBy = "Ola Nordmann"
-                });
+        await _client.PostAsJsonAsync(
+            $"/api/items/{id}/claim",
+            new
+            {
+                claimedBy = "Ola Nordmann"
+            });
 
-            var response = await _client.DeleteAsync(
-                location);
+        var response = await _client.DeleteAsync(
+            location);
 
-                Assert.Equal(
-                    HttpStatusCode.Conflict,
-                    response.StatusCode);
+        Assert.Equal(
+            HttpStatusCode.Conflict,
+            response.StatusCode);
     }
 
     [Fact]
