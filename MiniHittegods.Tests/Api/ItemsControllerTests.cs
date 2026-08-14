@@ -1,4 +1,3 @@
-using MiniHittegods.Domain.Entities;
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,6 +9,11 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
 {
     private readonly HttpClient _client;
 
+    private class ItemResponse
+    {
+        public string Category { get; set; } = string.Empty;
+    }
+
     public ItemsControllerTests(WebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
@@ -20,8 +24,8 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
     {
         var request = new
         {
-            title = "Blå jakke",
-            description = "Norge skrevet på ryggen",
+            title = "BlÃ¥ jakke",
+            description = "Norge skrevet pÃ¥ ryggen",
             category = "Clothing",
             foundLocation = "Scene 2"
         };
@@ -41,7 +45,7 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
         var request = new
         {
             title = "",
-            description = "Norge skrevet på ryggen",
+            description = "Norge skrevet pÃ¥ ryggen",
             category = "Clothing",
             foundLocation = "Scene 2"
         };
@@ -63,6 +67,48 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Equal(
             HttpStatusCode.OK,
             response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Get_items_with_category_filter_should_return_matching_items()
+    {
+        var clothingItem = new
+        {
+            title = "BlÃ¥ jakke",
+            description = "Norge skrevet pÃ¥ ryggen",
+            category = "Clothing",
+            foundLocation = "Scene 2"
+        };
+
+        var otherItem = new
+        {
+            title = "Svart lommebok",
+            description = "Fant ved inngangen",
+            category = "Wallet",
+            foundLocation = "Inngang A"
+        };
+
+        await _client.PostAsJsonAsync(
+            "/api/items",
+            clothingItem);
+
+        await _client.PostAsJsonAsync(
+            "/api/items",
+            otherItem);
+
+        var response = await _client.GetAsync(
+            "/api/items?category=Clothing");
+
+        Assert.Equal(
+            HttpStatusCode.OK,
+            response.StatusCode);
+
+        var items = await response.Content.ReadFromJsonAsync<List<ItemResponse>>();
+
+        Assert.NotNull(items);
+        Assert.NotEmpty(items);
+        Assert.All(items!, item =>
+            Assert.Equal("Clothing", item.Category));
     }
 
     [Fact]
@@ -94,7 +140,7 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
     {
         var createRequest = new
         {
-            title = "Rød sekk",
+            title = "RÃ¸d sekk",
             description = "Fant ved scenen",
             category = "Other",
             foundLocation = "Scene 1"
@@ -162,8 +208,8 @@ public class ItemsControllerTests : IClassFixture<WebApplicationFactory<Program>
     {
         var createRequest = new
         {
-            title = "Nøkler",
-            description = "Bilnøkler",
+            title = "NÃ¸kler",
+            description = "BilnÃ¸kler",
             category = "Keys",
             foundLocation = "Inngang"
         };

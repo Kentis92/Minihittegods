@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MiniHittegods.Api.DTOs;
 using MiniHittegods.Application.Services;
 using MiniHittegods.Domain.Entities;
+using MiniHittegods.Domain.Enums;
 
 namespace MiniHittegods.Api.Controllers;
 
@@ -36,9 +37,12 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        FoundItemStatus? status,
+        string? category,
+        string? q)
     {
-        var items = await _service.GetAllAsync();
+        var items = await _service.GetAllAsync(status, category, q);
 
         return Ok(items);
     }

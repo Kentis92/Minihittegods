@@ -1,5 +1,6 @@
 using MiniHittegods.Application.Interfaces;
 using MiniHittegods.Domain.Entities;
+using MiniHittegods.Domain.Enums;
 
 namespace MiniHittegods.Application.Services;
 
@@ -23,9 +24,12 @@ public class FoundItemsService
         return await _repository.GetByIdAsync(id);
     }
 
-    public async Task<IEnumerable<FoundItem>> GetAllAsync()
+    public async Task<IEnumerable<FoundItem>> GetAllAsync(
+        FoundItemStatus? status,
+        string? category,
+        string? q)
     {
-        return await _repository.GetAllAsync();
+        return await _repository.GetAllAsync(status, category, q);
     }
 
     public async Task<FoundItem> ClaimAsync(Guid id, string claimedBy)

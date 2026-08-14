@@ -1,5 +1,6 @@
 using MiniHittegods.Application.Interfaces;
 using MiniHittegods.Domain.Entities;
+using MiniHittegods.Domain.Enums;
 
 namespace MiniHittegods.Tests.Fakes;
 
@@ -19,9 +20,31 @@ public class FakeFoundItemRepository : IFoundItemRepository
         return Task.CompletedTask;
     }
 
-    public Task<List<FoundItem>> GetAllAsync()
+    public Task<List<FoundItem>> GetAllAsync(
+        FoundItemStatus? status,
+        string? category,
+        string? q)
     {
-        return Task.FromResult(_items);
+        IEnumerable<FoundItem> query = _items;
+
+        if (status.HasValue)
+        {
+            query = query.Where(x => x.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            query = query.Where(x => x.Category == category);
+        }
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            query = query.Where(x =>
+                x.Title.Contains(q) ||
+                (x.Description != null && x.Description.Contains(q)));
+        }
+
+        return Task.FromResult(query.ToList());
     }
 
     public Task<FoundItem?> GetByIdAsync(Guid id)

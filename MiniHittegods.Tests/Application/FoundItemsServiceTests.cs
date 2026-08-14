@@ -32,7 +32,7 @@ public class FoundItemsServiceTests
 
         await service.CreateAsync(item);
 
-        var items = await repository.GetAllAsync();
+        var items = await repository.GetAllAsync(null, null, null);
 
         Assert.Single(items);
     }
@@ -80,7 +80,7 @@ public class FoundItemsServiceTests
         await repository.AddAsync(item1);
         await repository.AddAsync(item2);
 
-        var result = await service.GetAllAsync();
+        var result = await service.GetAllAsync(null, null, null);
 
         Assert.Equal(2, result.Count());
     }
