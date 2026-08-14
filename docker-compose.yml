@@ -11,6 +11,18 @@ services:
     volumes:
       - minihittegods_data:/var/lib/postgresql/data
 
+  api:
+    build:
+      context: .
+      dockerfile: MiniHittegods.Api/Dockerfile
+    container_name: minihittegods-api
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=minihittegods;Username=postgres;Password=postgres"
+      ASPNETCORE_URLS: "http://+:8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
 
 volumes:
   minihittegods_data:
