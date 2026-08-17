@@ -22,7 +22,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      - postgres #Todo: legge til health-check, spør ai
 
 volumes:
   minihittegods_data:
